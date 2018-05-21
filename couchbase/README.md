@@ -14,6 +14,7 @@ This file will provision a LoadBalancer for the Web Console of the master node a
 ```
 kubectl apply -f create -f couchbase-sc.yaml
 ```
+
 #Create the StatefulSet
 
 ```

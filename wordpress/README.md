@@ -6,6 +6,6 @@ A Secret is an object that stores a piece of sensitive data like a password or k
 
 `kubectl create secret generic mysql-pass --from-file=password.txt`
 
-#Deploy WordPress and Ms SQL from the wordpress-mysql.yaml file:
+#Deploy WordPress and MySQL from the wordpress-mysql.yaml file:
 
 `kubectl create -f wordpress-mssql.yaml`

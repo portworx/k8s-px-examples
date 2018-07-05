@@ -8,4 +8,4 @@ A Secret is an object that stores a piece of sensitive data like a password or k
 
 #Deploy WordPress and MySQL from the wordpress-mysql.yaml file:
 
-`kubectl create -f wordpress-mssql.yaml`
+`kubectl create -f wordpress-mysql.yaml`

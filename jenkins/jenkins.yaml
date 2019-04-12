@@ -32,6 +32,7 @@ spec:
    labels:
     app: jenkins-app
   spec:
+   schedulerName: stork
    securityContext:
      fsGroup: 1000
    containers:

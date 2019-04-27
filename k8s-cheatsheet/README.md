@@ -296,29 +296,41 @@ List all supported resources	`kubectl api-resources`
 ### 1.19.1 Services on Master Nodes
 
 kube-apiserver	exposes the Kubernetes API from master nodes
+
 etcd	reliable data store for all k8s cluster data
+
 kube-scheduler	schedule pods to run on selected nodes
+
 kube-controller-manager	node controller, replication controller, endpoints controller, and service account & token controllers
 
 ### 1.19.2 Services on Worker Nodes
 
 kubelet	makes sure that containers are running in a pod
+
 kube-proxy	perform connection forwarding
+
 Container Runtime	Kubernetes supported runtimes: Docker, rkt, runc and any OCI runtime-spec implementation
 
 ### 1.19.3 Addons: pods and services that implement cluster features
 
 DNS	serves DNS records for Kubernetes services
+
 Web UI	a general purpose, web-based UI for Kubernetes clusters
+
 Container Resource Monitoring	collect, store and serve container metrics
+
 Cluster-level Logging	save container logs to a central log store with search/browsing interface
+
 
 ### 1.19.4 Tools
 
 kubectl	the command line util to talk to k8s cluster
+
 kubeadm	the command to bootstrap the cluster
+
 kubefed	the command line to control a Kubernetes Cluster Federation
-Kubernetes Components	Link: Kubernetes Components
+
+Kubernetes Components	Link: https://kubernetes.io/docs/concepts/overview/components/
 
 ## 1.20 More Resources
 License: Code is licensed under MIT License.

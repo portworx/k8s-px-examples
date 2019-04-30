@@ -6,6 +6,7 @@ In this cheatsheet, we are going to explore the basic operations available throu
 ## 1.1 PXCTL Basics Commands
 
 By default, the CLI displays the information in human readable form. For example, to learn more about the available commands, type pxctl help: `pxctl help` 
+The current release of `pxctl` is located in the `/opt/pwx/bin/` directory of every worker node and requires that you run as it as a privileged user.
 
 Find out the portwrox current version : `pxctl -v` or `pxctl --version` 
 
@@ -39,7 +40,7 @@ OPTIONS:
    --help, -h  show help
 ```
 
-##1.3 Resources Deletion
+## 1.3 Upgrade related operations 
 
 ##1.4 Log & Conf Files
 

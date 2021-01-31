@@ -1,25 +1,58 @@
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: portworx-sc-repl3
+  name: mysql-sc
 provisioner: kubernetes.io/portworx-volume
 parameters:
   repl: "3"
   priority_io: "high"
+
 ---
+
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-pvc-1
+  name: mysql-pvc
   annotations:
-    volume.beta.kubernetes.io/storage-class: portworx-sc-repl3
+    volume.beta.kubernetes.io/storage-class: mysql-sc
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 2Gi
+
 ---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: wordpress-sc
+provisioner: kubernetes.io/portworx-volume
+parameters:
+  repl: "3"
+  priority_io: "high"
+  shared: "true"
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wp-pvc
+  labels:
+    app: wordpress
+  annotations:
+    volume.beta.kubernetes.io/storage-class: wordpress-sc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -33,14 +66,19 @@ spec:
     app: wordpress
     tier: mysql
   clusterIP: None
+
 ---
-apiVersion: extensions/v1beta1
+
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wordpress-mysql
   labels:
     app: wordpress
 spec:
+  selector:
+    matchLabels:
+      app: wordpress
   strategy:
     type: Recreate
   template:
@@ -49,10 +87,11 @@ spec:
         app: wordpress
         tier: mysql
     spec:
+      # Use the Stork scheduler to enable more efficient placement of the pods
       schedulerName: stork
       containers:
       - image: mysql:5.6
-        imagePullPolicy: 
+        imagePullPolicy:
         name: mysql
         env:
           # $ kubectl create secret generic mysql-pass --from-file=password.txt
@@ -71,33 +110,11 @@ spec:
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
-          claimName: mysql-pvc-1
+          claimName: mysql-pvc
+
+
 ---
-apiVersion: storage.k8s.io/v1beta1
-kind: StorageClass
-metadata:
-  name: portworx-sc-repl3-shared
-provisioner: kubernetes.io/portworx-volume
-parameters:
-  repl: "3"
-  priority_io: "high"
-  shared: "true"
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: wp-pv-claim
-  labels:
-    app: wordpress
-  annotations:
-    volume.beta.kubernetes.io/storage-class: portworx-sc-repl3-shared
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 1Gi
----
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -108,18 +125,24 @@ spec:
   ports:
     - port: 80
       nodePort: 30303
+      targetPort: 80
+      protocol: TCP
   selector:
     app: wordpress
     tier: frontend
   type: NodePort
 ---
-apiVersion: extensions/v1beta1
+
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wordpress
   labels:
     app: wordpress
 spec:
+  selector:
+    matchLabels:
+      app: wordpress
   replicas: 3
   strategy:
     type: Recreate
@@ -129,11 +152,12 @@ spec:
         app: wordpress
         tier: frontend
     spec:
+      # Use the Stork scheduler to enable more efficient placement of the pods
       schedulerName: stork
       containers:
       - image: wordpress:4.8-apache
         name: wordpress
-        imagePullPolicy: 
+        imagePullPolicy:
         env:
         - name: WORDPRESS_DB_HOST
           value: wordpress-mysql
@@ -151,4 +175,5 @@ spec:
       volumes:
       - name: wordpress-persistent-storage
         persistentVolumeClaim:
-          claimName: wp-pv-claim
+          claimName: wp-pvc
+
